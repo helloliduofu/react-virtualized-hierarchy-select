@@ -1,0 +1,246 @@
+.hierarchy-select-wrap {
+  line-height: 1.5;
+}
+
+.hierarchy-select {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background-color: #fff;
+  width: 100%;
+  height: 300px;
+}
+
+/*滚动条样式*/
+.hierarchy-select::-webkit-scrollbar {
+  height: 15px;
+  background-color: transparent;
+  border-radius: 9px;
+}
+
+.hierarchy-select::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 9px;
+  background-clip: content-box;
+  border: 3px solid transparent;
+}
+
+.hierarchy-select-item {
+  position: relative;
+  display: block;
+  padding: 10px 10px;
+  margin-bottom: -1px;
+  background-color: #fff;
+  white-space: nowrap;
+}
+
+.hierarchy-select-item-active {
+  position: relative;
+  display: block;
+  padding: 10px 10px;
+  margin-bottom: -1px;
+  background-color: #fff;
+  border: none;
+  background: #eee;
+}
+
+.hierarchy-select-item:hover {
+  background-color: #f8fafb;
+}
+
+.hierarchy-select-block {
+  padding-left: 0;
+  border: none;
+}
+
+.hierarchy-select-block div {
+  outline: none;
+}
+
+.hierarchy-select .hierarchy-select-block:first-child,
+.hierarchy-select .hierarchy-select-block.hide-item {
+  border-left: none;
+}
+
+.hierarchy-select .hierarchy-select-block {
+  flex-shrink: 0;
+  float: left;
+  border-left: 1px solid #dfe1e7;
+  margin-bottom: 0;
+  /* padding: 10px 0; */
+  height: 300px;
+  max-height: 300px;
+  overflow: hidden;
+  -webkit-transition: width 0.4s;
+  -moz-transition: width 0.4s;
+  -ms-transition: width 0.4s;
+  -o-transition: width 0.4s;
+  transition: width 0.4s;
+}
+
+.hierarchy-select-block-item {
+  position: relative;
+  display: block;
+  padding: 10px 10px;
+  margin-bottom: -1px;
+  background-color: #fff;
+  white-space: nowrap;
+}
+
+.hierarchy-select-tags .selected-text {
+  margin-top: 10px;
+  margin-right: 20px;
+  line-height: 34px;
+  font-size: 14px;
+  color: #9499a4;
+}
+
+.hierarchy-select-tags .tags-clear {
+  float: left;
+  margin-left: 12px;
+  margin-top: 10px;
+}
+
+.hierarchy-select-tags ul {
+  margin-bottom: 10px;
+}
+
+.hierarchy-select-tags ul li {
+  float: left;
+  margin-right: 5px;
+  border: 1px solid #e4e9f0;
+  border-radius: 20px;
+  background: #eef2f5;
+  height: 32px;
+  line-height: 30px;
+  padding-left: 24px;
+  padding-right: 8px;
+  margin-top: 10px;
+  font-size: 14px;
+  transition: padding 0.2s ease-in-out;
+}
+
+.hierarchy-select-tags ul li:hover {
+  background: #e1e7f1;
+  padding-left: 16px;
+  padding-right: 16px;
+  transition: padding 0.2s ease-in-out;
+}
+
+.hierarchy-select-tags ul li i.anticon {
+  margin-left: 5px;
+  opacity: 0;
+  cursor: pointer;
+  width: 12px;
+  transition: opacity 0.2s;
+  color: #caccd0;
+}
+
+.hierarchy-select-tags ul li:hover i.anticon {
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.hierarchy-select-search .search-box {
+  display: table;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.hierarchy-select-search .search {
+  border: 0;
+  width: 100%;
+  outline: none;
+  display: table-cell;
+  height: 32px;
+  background-color: transparent;
+}
+
+.hierarchy-select-search .fa {
+  width: 28px;
+  font-size: 14px;
+  display: table-cell;
+  text-align: center;
+  margin-right: 10px;
+  color: #808ca7;
+}
+
+.hierarchy-select-search-menu {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.hierarchy-select-search-menu .ant-dropdown-menu-item {
+  padding: 12px 15px;
+}
+
+.hierarchy-select-layout {
+  display: inline-block;
+  border: 1px solid #dee4f5;
+  line-height: 1.5;
+  vertical-align: top;
+  width: 100%;
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 20px;
+}
+
+.hierarchy-select-layout-title {
+  position: relative;
+  background-color: #f9fafd;
+  border-bottom: 1px solid #dee4f5;
+  font-size: 12px;
+  color: #333;
+  padding: 6px 12px;
+  text-align: left;
+}
+
+.hierarchy-select-input :global(.ant-input) {
+  height: 24px !important;
+  width: 180px !important;
+}
+
+.hierarchy-select-list :global(.ant-list-item-action) {
+  margin-left: 0;
+}
+
+.hierarchy-select-list :global(.ant-list-item-meta-title) {
+  display: flex;
+}
+
+/* 增加半选中 */
+.hierarchy-indeterminate > .ant-checkbox-inner {
+  background-color: #fff;
+  border-color: #d9d9d9;
+}
+
+.hierarchy-indeterminate > .ant-checkbox-inner:after {
+  content: " ";
+  -webkit-transform: translate(-50%, -50%) scale(1);
+  -ms-transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%) scale(1);
+  border: 0;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background-color: #1890ff;
+  opacity: 1;
+}
+
+.hierarchy-text-overflow {
+  overflow: hidden;
+  -ms-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hierarchy-clearfix:before,
+.hierarchy-clearfix:after {
+  content: " ";
+  display: table;
+}
+
+.hierarchy-clearfix:after {
+  clear: both;
+}
