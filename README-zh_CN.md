@@ -9,11 +9,11 @@
                                                                                                                             |___/                                
 </pre>
 
-English | [简体中文](./README-zh_CN.md)
+[English](./README.md) | 简体中文
 
 # React Virtualized Select
-
-## Getting started
+k<a className={styles.card_link}><a className={styles.card_link}>k
+## 📦 安装
 
 Install `react-virtualized-hierarchy-select` using npm.
 
@@ -21,18 +21,18 @@ Install `react-virtualized-hierarchy-select` using npm.
 npm install react-virtualized-hierarchy-select --save
 ```
 
-## React Virtualized HierarchySelect Props
+## 📘 参数
 
-| Name            | Type                                         | Description                                                |
+| 名称            | 类型                                         | 说明                                                |
 | --------------- | -------------------------------------------- | ---------------------------------------------------------- |
-| data            | Array:[{id:x,name:x,children:[id:x,name:x]}] | tree data                                                  |
-| checkableLeaf   | Boolean                                      | onlyCheckLeaf ? only use children Key : use parentNode key |
-| needReCalculate | Boolean                                      | outside changed checkedKeys need re-calculate ?            |
-| checkedKeys     | Array: [id,id]                               | checked treeNode key                                        |
-| onChange        | (checkedKeys) => void                        | onChange event                                             |
+| data            | Array:[{id:x,name:x,children:[id:x,name:x]}] | 树数据                                                  |
+| checkableLeaf   | Boolean                                      | 只选择根结点时启用，其他情况将使用父节点 |
+| needReCalculate | Boolean                                      | 如果外部需要改变选择的结点，需要开启该选项            |
+| checkedKeys     | Array: [id,id]                               | 选择的结点                                       |
+| onChange        | (checkedKeys) => void                        | 选中事件                                            |
 
 
-## Example
+## 🔨 示例
 
 ```
 import React from "react";
@@ -85,8 +85,8 @@ export default class App extends React.Component {
 
 ```
 
-## Donate
-> contact me
+## 🎁 捐赠
+> 联系我
 
-## Contact me
-> 1051919278@qq.com
+## 💌 其他问题
+> email: 1051919278@qq.com
