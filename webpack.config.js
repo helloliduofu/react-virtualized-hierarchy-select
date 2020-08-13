@@ -16,8 +16,8 @@ module.exports = {
 
   output: {
     filename: "[name].js",
-    path: path.resolve(__dirname, filePath),
-    ...(babel_env == "umd" ? {} : { umdNamedDefine: true }), // 是否将模块名称作为 AMD 输出的命名空间
+    path: path.resolve(__dirname, "es"),
+    umdNamedDefine: true, // 是否将模块名称作为 AMD 输出的命名空间
     libraryTarget: "umd",
     libraryExport: "default",
   },

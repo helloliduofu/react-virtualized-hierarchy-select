@@ -30,7 +30,7 @@ class Test extends Component {
             ],
           },
         ]}
-        map={{
+        dataMap={{
           1: {
             id: 1,
             name: 1,

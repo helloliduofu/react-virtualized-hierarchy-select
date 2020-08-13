@@ -12,7 +12,7 @@
 [English](./README.md) | 简体中文
 
 # React Virtualized Select
-k<a className={styles.card_link}><a className={styles.card_link}>k
+
 ## 📦 安装
 
 Install `react-virtualized-hierarchy-select` using npm.
@@ -23,14 +23,13 @@ npm install react-virtualized-hierarchy-select --save
 
 ## 📘 参数
 
-| 名称            | 类型                                         | 说明                                                |
-| --------------- | -------------------------------------------- | ---------------------------------------------------------- |
-| data            | Array:[{id:x,name:x,children:[id:x,name:x]}] | 树数据                                                  |
-| checkableLeaf   | Boolean                                      | 只选择根结点时启用，其他情况将使用父节点 |
-| needReCalculate | Boolean                                      | 如果外部需要改变选择的结点，需要开启该选项            |
-| checkedKeys     | Array: [id,id]                               | 选择的结点                                       |
-| onChange        | (checkedKeys) => void                        | 选中事件                                            |
-
+| 名称          | 类型                                          | 说明                                     |
+| ------------- | --------------------------------------------- | ---------------------------------------- |
+| data          | Array:[{id:x,name:x,children:[id:x,name:x]}]  | 树数据                                   |
+| dataMap       | Object:[{id:x,name:x,children:[id:x,name:x]}] | 树数据                                   |
+| onlyCheckLeaf | Boolean                                       | 只选择根结点时启用，其他情况将使用父节点 |
+| checkedKeys   | Array: [id,id]                                | 选择的结点                               |
+| onChange      | (checkedKeys) => void                         | 选中事件                                 |
 
 ## 🔨 示例
 
@@ -49,35 +48,49 @@ export default class App extends React.Component {
 
     return (
       <VirtualizedHierarchySelect
+        title="测试分类"
         data={[
           {
             id: 1,
             name: 1,
             children: [
-              {
-                id: 2,
-                name: "2",
-                children: [
-                  { id: 22, name: "22" },
-                  { id: 222, name: "222" }
-                ]
-              },
-              {
-                id: 3,
-                name: "3",
-                children: [
-                  { id: 33, name: "33" },
-                  {
-                    id: 333,
-                    name: "333"
-                  }
-                ]
-              }
-            ]
-          }
+              { id: 11, name: 11 },
+              { id: 112, name: 112 },
+            ],
+          },
+          {
+            id: 2,
+            name: 2,
+            children: [
+              { id: 22, name: 22 },
+              { id: 222, name: 222 },
+            ],
+          },
         ]}
-        checkedKeys={checkedKeys}
-        onChange={checkedKeys => this.setState({ checkedKeys })}
+        dataMap={{
+          1: {
+            id: 1,
+            name: 1,
+            children: [
+              { id: 11, name: 11 },
+              { id: 112, name: 112 },
+            ],
+          },
+          11: { id: 11, name: 11 },
+          112: { id: 112, name: 112 },
+          2: {
+            id: 2,
+            name: 2,
+            children: [
+              { id: 22, name: 22 },
+              { id: 222, name: 222 },
+            ],
+          },
+          22: { id: 22, name: 22 },
+          222: { id: 222, name: 222 },
+        }}
+        checkedKeys={this.state.checkedKeys}
+        onChange={(e) => this.setState({ checkedKeys: e })}
       />
     );
   }
@@ -86,7 +99,9 @@ export default class App extends React.Component {
 ```
 
 ## 🎁 捐赠
+
 > 联系我
 
 ## 💌 其他问题
+
 > email: 1051919278@qq.com

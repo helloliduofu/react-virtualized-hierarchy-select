@@ -5,7 +5,7 @@ import styles from "./index.css";
 
 /**
  * @param {Array} data []
- * @param {Object} map {}
+ * @param {Object} dataMap {}
  * @param {Array} checkedKeys []
  * @param {Array} value []
  * @param {Function} onChange []
@@ -31,7 +31,7 @@ export default class VirtualizedHierarchySelect extends Component {
     childAlias: "children",
     displayNumber: 2,
     onlyCheckLeaf: false,
-    rowHeight: 54,
+    rowHeight: 33,
   };
 
   // 是否有子结点
@@ -115,7 +115,7 @@ export default class VirtualizedHierarchySelect extends Component {
   onCheck(item, checked, levelIndex) {
     const {
       props: {
-        map,
+        dataMap,
         rootAlias,
         childAlias,
         keyAlias,
@@ -127,7 +127,7 @@ export default class VirtualizedHierarchySelect extends Component {
     } = this;
 
     const root = this.getRootData();
-    const allMap = { ...map, [rootAlias]: root };
+    const allMap = { ...dataMap, [rootAlias]: root };
 
     // 计算重新生成的勾选值
     let _checkedKeys = [];
@@ -343,7 +343,7 @@ export default class VirtualizedHierarchySelect extends Component {
 
   render() {
     const {
-      props: { map, nameAlias },
+      props: { dataMap, nameAlias },
       state: { activeNodeKeys },
     } = this;
 
@@ -353,12 +353,12 @@ export default class VirtualizedHierarchySelect extends Component {
     const nodeKeys = [
       root,
       ...activeNodeKeys
-        .filter((item) => this.hasChild(map[item]))
+        .filter((item) => this.hasChild(dataMap[item]))
         .map((item, index) => {
-          const checked = this.isChecked(map[item]) || checkedArr[index];
+          const checked = this.isChecked(dataMap[item]) || checkedArr[index];
           checkedArr.push(checked);
           return {
-            ...map[item],
+            ...dataMap[item],
             checked,
           };
         }),

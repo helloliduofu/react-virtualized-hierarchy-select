@@ -23,14 +23,13 @@ npm install react-virtualized-hierarchy-select --save
 
 ## React Virtualized HierarchySelect Props
 
-| Name            | Type                                         | Description                                                |
-| --------------- | -------------------------------------------- | ---------------------------------------------------------- |
-| data            | Array:[{id:x,name:x,children:[id:x,name:x]}] | tree data                                                  |
-| checkableLeaf   | Boolean                                      | onlyCheckLeaf ? only use children Key : use parentNode key |
-| needReCalculate | Boolean                                      | outside changed checkedKeys need re-calculate ?            |
-| checkedKeys     | Array: [id,id]                               | checked treeNode key                                        |
-| onChange        | (checkedKeys) => void                        | onChange event                                             |
-
+| Name          | Type                                         | Description                                                |
+| ------------- | -------------------------------------------- | ---------------------------------------------------------- |
+| data          | Array:[{id:x,name:x,children:[id:x,name:x]}] | tree data                                                  |
+| dataMap       | Object:{x:{id:'x',name:'x'}}                 | tree data                                                  |
+| onlyCheckLeaf | Boolean                                      | onlyCheckLeaf ? only use children Key : use parentNode key |
+| checkedKeys   | Array: [id,id]                               | checked treeNode key                                       |
+| onChange      | (checkedKeys) => void                        | onChange event                                             |
 
 ## Example
 
@@ -49,35 +48,49 @@ export default class App extends React.Component {
 
     return (
       <VirtualizedHierarchySelect
+        title="测试分类"
         data={[
           {
             id: 1,
             name: 1,
             children: [
-              {
-                id: 2,
-                name: "2",
-                children: [
-                  { id: 22, name: "22" },
-                  { id: 222, name: "222" }
-                ]
-              },
-              {
-                id: 3,
-                name: "3",
-                children: [
-                  { id: 33, name: "33" },
-                  {
-                    id: 333,
-                    name: "333"
-                  }
-                ]
-              }
-            ]
-          }
+              { id: 11, name: 11 },
+              { id: 112, name: 112 },
+            ],
+          },
+          {
+            id: 2,
+            name: 2,
+            children: [
+              { id: 22, name: 22 },
+              { id: 222, name: 222 },
+            ],
+          },
         ]}
-        checkedKeys={checkedKeys}
-        onChange={checkedKeys => this.setState({ checkedKeys })}
+        dataMap={{
+          1: {
+            id: 1,
+            name: 1,
+            children: [
+              { id: 11, name: 11 },
+              { id: 112, name: 112 },
+            ],
+          },
+          11: { id: 11, name: 11 },
+          112: { id: 112, name: 112 },
+          2: {
+            id: 2,
+            name: 2,
+            children: [
+              { id: 22, name: 22 },
+              { id: 222, name: 222 },
+            ],
+          },
+          22: { id: 22, name: 22 },
+          222: { id: 222, name: 222 },
+        }}
+        checkedKeys={this.state.checkedKeys}
+        onChange={(e) => this.setState({ checkedKeys: e })}
       />
     );
   }
@@ -86,7 +99,9 @@ export default class App extends React.Component {
 ```
 
 ## Donate
+
 > contact me
 
 ## Contact me
+
 > 1051919278@qq.com
