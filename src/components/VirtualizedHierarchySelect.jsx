@@ -17,7 +17,6 @@ import styles from "./index.css";
  * @param {String} keyAlias key别名，默认'key'
  * @param {String} childAlias 子节点别名，默认'children'
  */
-
 export default class VirtualizedHierarchySelect extends Component {
   state = {
     activeNodeKeys: [], // 选中的
@@ -36,7 +35,10 @@ export default class VirtualizedHierarchySelect extends Component {
 
   // 是否有子结点
   hasChild(item) {
-    const { childAlias } = this.props;
+    const {
+      props: { childAlias },
+    } = this;
+
     return item && item[childAlias] && item[childAlias].length > 0;
   }
 
@@ -48,10 +50,11 @@ export default class VirtualizedHierarchySelect extends Component {
     const getChildKeys = (node) =>
       this.hasChild(node)
         ? [
-            ...node[childAlias].map((item) => [
-              item[keyAlias],
-              getChildKeys[item],
-            ]),
+            ...node[childAlias].map((item) =>
+              this.hasChild(item)
+                ? [item[keyAlias], getChildKeys[item]]
+                : item[keyAlias]
+            ),
           ]
         : [];
 
@@ -105,9 +108,8 @@ export default class VirtualizedHierarchySelect extends Component {
       state: { activeNodeKeys },
     } = this;
 
-    const _activeNodeKey = activeNodeKeys.slice(0, levelIndex);
     this.setState({
-      activeNodeKeys: [..._activeNodeKey, nodeKey],
+      activeNodeKeys: [...activeNodeKeys.slice(0, levelIndex), nodeKey],
     });
   }
 
@@ -138,45 +140,66 @@ export default class VirtualizedHierarchySelect extends Component {
         ? [...checkedKeys, item[keyAlias]]
         : checkedKeys.filter((key) => key != item[keyAlias]);
     } else {
-      // 可以勾选所有结点
-      const activeNodeChidrenKeys = activeNodeKeys.map((item) =>
-        (allMap[item][childAlias] || []).map((item) => item[keyAlias])
-      );
-
       // 选中处理
       if (checked) {
         // 根目录直接push
         if (item[keyAlias] === rootAlias) {
           _checkedKeys = root[childAlias].map((item) => item[keyAlias]);
-        } else if (checkedKeys.length == 0) {
-          // 数组为空直接push
-          _checkedKeys = [item[keyAlias]];
         } else {
-          // 父级一层一层往上
+          // 父级一层一层往上（倒叙）
           _checkedKeys = [...checkedKeys, item[keyAlias]];
-          const reverse = activeNodeChidrenKeys.reverse();
-          for (let i = 0; i < reverse.length; i++) {
-            const fatherChildrenKeys = reverse[i];
-            if (fatherChildrenKeys.length > 0) {
-              const filtedChildrenKeys = _checkedKeys.filter(
-                (key) => !fatherChildrenKeys.includes(key)
+          // 注意可能会改变当前选中的结点
+          const _activeNodeKeys = activeNodeKeys.slice(0, levelIndex + 1);
+          for (let i = _activeNodeKeys.length - 1; i >= 0; i--) {
+            // 先找最近的父级
+            const nodekey = _activeNodeKeys[i];
+            const node = dataMap[nodekey];
+
+            // 如果有子类就判断过滤可能包含的子类key
+            if (this.hasChild(node)) {
+              // 去除当前勾选所有子类key
+              if (i == _activeNodeKeys.length - 1) {
+                // 所有的子类key
+                const allChildrenKeys = this.getAllChildrenKeys(node);
+                // 去除当前勾选所有子类key
+                _checkedKeys = _checkedKeys.filter(
+                  (key) => !allChildrenKeys.includes(key)
+                );
+              }
+
+              // 子类key
+              const childrenKeys = node[childAlias].map(
+                (item) => item[keyAlias]
               );
-              const fatherKey = activeNodeKeys[reverse.length - i - 1];
+
+              // 去掉包含后的子类key
+              const filtedChildrenKeys = _checkedKeys.filter(
+                (key) => !childrenKeys.includes(key)
+              );
+
+              // 如果包含所有结点子类 则替换结点子类 为 结点
               if (
                 filtedChildrenKeys.length ==
-                _checkedKeys.length - fatherChildrenKeys.length
+                _checkedKeys.length - childrenKeys.length
               ) {
+                // 如果是根结点则不向上再次寻找
                 _checkedKeys =
-                  fatherKey === rootAlias
-                    ? fatherChildrenKeys
-                    : [...filtedChildrenKeys, fatherKey];
-              } else {
+                  nodekey === rootAlias
+                    ? childrenKeys
+                    : [...filtedChildrenKeys, nodekey];
+              } else if (!filtedChildrenKeys.includes(nodekey)) {
+                // 其他无关结点跳出
                 break;
               }
             }
           }
         }
       } else {
+        // 可以勾选所有结点
+        const activeNodeChidrenKeys = activeNodeKeys.map((item) =>
+          (allMap[item][childAlias] || []).map((item) => item[keyAlias])
+        );
+
         // 根目录直接为[]
         if (item[keyAlias] === rootAlias) {
           _checkedKeys = [];
@@ -185,23 +208,31 @@ export default class VirtualizedHierarchySelect extends Component {
           _checkedKeys = checkedKeys.filter((key) => key !== item[keyAlias]);
         } else {
           _checkedKeys = [...checkedKeys, item[keyAlias]];
-          const reverse = activeNodeChidrenKeys.reverse();
-          for (let i = 0; i < reverse.length; i++) {
-            const fatherChildrenKeys = reverse[i];
-            const fatherKey = activeNodeKeys[reverse.length - i - 1];
+          // 注意可能会改变当前选中的结点
+          const _activeNodeKeys = activeNodeKeys.slice(0, levelIndex + 1);
+          for (let i = _activeNodeKeys.length - 1; i >= 0; i--) {
+            const nodekey = _activeNodeKeys[i];
+            const node = dataMap[nodekey];
 
-            if (fatherChildrenKeys.length > 0) {
-              const isIncludeFatherKey = checkedKeys.includes(fatherKey);
-              if (isIncludeFatherKey) {
-                _checkedKeys = [...checkedKeys, ...fatherChildrenKeys].filter(
-                  (key) => ![item[keyAlias], fatherKey].includes(key)
-                );
-                break;
-              } else {
-                _checkedKeys = [...checkedKeys, ...fatherChildrenKeys].filter(
-                  (key) => ![item[keyAlias], fatherKey].includes(key)
-                );
-              }
+            // 子类key
+            const childrenKeys = (node[childAlias] || []).map(
+              (item) => item[keyAlias]
+            );
+
+            // 所有的子类key
+            const allChildrenKeys = this.getAllChildrenKeys(node);
+
+            const isIncludeFatherKey = checkedKeys.includes(nodekey);
+            if (isIncludeFatherKey) {
+              _checkedKeys = [...checkedKeys, ...childrenKeys].filter(
+                (key) =>
+                  ![item[keyAlias], nodekey, ...allChildrenKeys].includes(key)
+              );
+            } else {
+              _checkedKeys = [...checkedKeys, ...childrenKeys].filter(
+                (key) =>
+                  ![item[keyAlias], nodekey, ...allChildrenKeys].includes(key)
+              );
             }
           }
         }
@@ -211,7 +242,7 @@ export default class VirtualizedHierarchySelect extends Component {
   }
 
   // 虚拟列表
-  _rowRenderer(_item, levelIndex, { index, isScrolling, key, style }) {
+  _rowRenderer(_item, levelIndex, width, { index, isScrolling, key, style }) {
     const {
       props: { onlyCheckLeaf, nameAlias, keyAlias, childAlias, render },
       state: { activeNodeKeys },
@@ -221,58 +252,50 @@ export default class VirtualizedHierarchySelect extends Component {
     const isLeaf = !this.hasChild(item);
 
     const isChecked = _item.checked || this.isChecked(item);
-    const isHalfChecked = _item.checked ? false : this.isHalfChecked(item);
+    const isHalfChecked = isChecked ? false : this.isHalfChecked(item);
 
     return (
       <div key={key} style={style}>
         <div
           key={`treeNode_${index}_${item[nameAlias]}`}
+          title={item[nameAlias]}
           className={
             isChecked || activeNodeKeys.includes(item[keyAlias])
               ? "hierarchyselect-li hierarchyselect-li-active"
               : "hierarchyselect-li"
           }
-          onClick={(e) => this.onSelect(item[keyAlias], levelIndex)}
-          title={item[nameAlias]}
         >
           {!onlyCheckLeaf && (
-            <span
-              className={isHalfChecked ? "hierarchyselect-indeterminate" : ""}
-            >
-              <input
-                type="checkbox"
-                checked={isChecked}
-                disabled={item.disabled}
-                onChange={(e) => {
-                  e.stopPropagation();
-                  this.onCheck(item, e.target.checked, levelIndex);
-                }}
-              />
-            </span>
+            <CheckBox
+              className="hierarchyselect-mr-5"
+              checked={isChecked}
+              disabled={item.disabled}
+              indeterminate={isHalfChecked}
+              onChange={(e) => {
+                this.onSelect(item[keyAlias], levelIndex);
+                this.onCheck(item, e.target.checked, levelIndex);
+              }}
+            />
           )}
+
           {onlyCheckLeaf && isLeaf && (
-            <input
-              type="checkbox"
+            <CheckBox
+              className="hierarchyselect-mr-5"
               checked={isChecked}
               disabled={item.disabled}
               onChange={(e) => {
-                e.stopPropagation();
+                this.onSelect(item[keyAlias], levelIndex);
                 this.onCheck(item, e.target.checked, levelIndex);
               }}
             />
           )}
           <span
-            {...(isLeaf
-              ? {}
-              : {
-                  className: "text-overflow",
-                  style: {
-                    width: onlyCheckLeaf
-                      ? "calc(100% - 34px)"
-                      : "calc(100% - 58px)",
-                    display: "inline-block",
-                  },
-                })}
+            style={{
+              width,
+            }}
+            className="hierarchyselect-text"
+            {...(!render ? { title: item[nameAlias] } : {})}
+            onClick={(e) => this.onSelect(item[keyAlias], levelIndex)}
           >
             {render ? render(item) : item[nameAlias]}
           </span>
@@ -284,7 +307,7 @@ export default class VirtualizedHierarchySelect extends Component {
 
   //   生成block
   renderBlock({ title, nodeData, style, levelIndex }) {
-    const { childAlias,keyAlias, rowHeight, showSelectAll } = this.props;
+    const { childAlias, keyAlias, rowHeight, showSelectAll } = this.props;
 
     const isChecked = nodeData.checked;
     const isHalfChecked = nodeData.checked
@@ -297,16 +320,14 @@ export default class VirtualizedHierarchySelect extends Component {
         <div className="hierarchyselect-content">
           {showSelectAll && (
             <div className="hierarchyselect-li">
-              <span
-                className={isHalfChecked ? "hierarchyselect-indeterminate" : ""}
-              >
-                <input
-                  key={nodeData[keyAlias]}
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={(e) => this.onCheck(nodeData, e.target.checked)}
-                />
-              </span>
+              <CheckBox
+                className="hierarchyselect-mr-5"
+                checked={isChecked}
+                indeterminate={isHalfChecked}
+                onChange={(e) =>
+                  this.onCheck(nodeData, e.target.checked, levelIndex)
+                }
+              />
               <span>全选</span>
             </div>
           )}
@@ -318,7 +339,12 @@ export default class VirtualizedHierarchySelect extends Component {
                 noRowsRenderer={this._noRowsRenderer}
                 rowCount={nodeData[childAlias].length}
                 rowHeight={rowHeight}
-                rowRenderer={this._rowRenderer.bind(this, nodeData, levelIndex)}
+                rowRenderer={this._rowRenderer.bind(
+                  this,
+                  nodeData,
+                  levelIndex,
+                  width
+                )}
                 width={width}
               />
             )}
@@ -386,3 +412,58 @@ export default class VirtualizedHierarchySelect extends Component {
     );
   }
 }
+
+const CheckBox = ({
+  checked,
+  indeterminate,
+  disabled,
+  onChange,
+  className = "",
+}) => (
+  <span
+    className={`hierarchyselect-checkbox ${
+      checked ? "hierarchyselect-checkbox-checked" : ""
+    } ${
+      indeterminate ? "hierarchyselect-checkbox-indeterminate" : ""
+    } ${className}`}
+  >
+    <input
+      type="checkbox"
+      checked={checked}
+      disabled={disabled}
+      indeterminate={indeterminate}
+      onChange={(e) => {
+        e.stopPropagation();
+        onChange(e);
+      }}
+    />
+    <span className="hierarchyselect-checkbox-inner" />
+  </span>
+);
+
+/**
+ * 递归生成{id:obj} map集合
+ * @param {Array<Object>} list 数组 []
+ * @param {string} childrenkey 子类key 默认"children"
+ * @param {string} keyAlias id key 默认"id"
+ * @returns {object} id:object键值映射
+ **/
+export const recursive = (
+  list = [],
+  childrenkey = "children",
+  keyAlias = "id"
+) => {
+  const map = {};
+  const fn = (list) => {
+    if (list.length > 0) {
+      list.map((item) => {
+        map[item[keyAlias]] = item;
+        if (item[childrenkey] && item[childrenkey].length > 0) {
+          fn(item[childrenkey]);
+        }
+      });
+    }
+  };
+  fn(list);
+  return map;
+};

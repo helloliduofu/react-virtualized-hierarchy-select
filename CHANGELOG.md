@@ -21,3 +21,9 @@
 
 - feat: reset 
 - Bugfix: fix some problems
+
+### 3.0.0 (Sep 30, 2020)
+
+- feat: checked style 
+- Bugfix: 1.fix checked bug
+          2.fix css style display bug
