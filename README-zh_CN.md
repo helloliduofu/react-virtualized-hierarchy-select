@@ -23,20 +23,102 @@ npm install react-virtualized-hierarchy-select --save
 
 ## 📘 参数
 
-| 名称          | 类型                                          | 说明                                     |
-| ------------- | --------------------------------------------- | ---------------------------------------- |
-| data          | Array:[{id:x,name:x,children:[id:x,name:x]}]  | 树数据                                   |
-| dataMap       | Object:[{id:x,name:x,children:[id:x,name:x]}] | 树数据                                   |
-| onlyCheckLeaf | Boolean                                       | 只选择根结点时启用，其他情况将使用父节点 |
-| checkedKeys   | Array: [id,id]                                | 选择的结点                               |
-| onChange      | (checkedKeys) => void                         | 选中事件                                 |
+| 名称          | 类型                                          | 说明                                                    |
+| ------------- | --------------------------------------------- | ------------------------------------------------------- |
+| data          | Array:[{id:x,name:x,children:[id:x,name:x]}]  | 树数据                                                  |
+| dataMap       | Object:[{id:x,name:x,children:[id:x,name:x]}] | 树 id 和结点映射数据使用示例的 recursive 方法去生成即可 |
+| onlyCheckLeaf | Boolean                                       | 只选择根结点时启用，其他情况将使用父节点                |
+| checkedKeys   | Array: [id,id]                                | 选择的结点                                              |
+| onChange      | (checkedKeys) => void                         | 选中事件                                                |
 
 ## 🔨 示例
 
 ```
 import React from "react";
 import VirtualizedHierarchySelect from "react-virtualized-hierarchy-select";
-import "react-virtualized-hierarchy-select/lib/index.css";
+import "react-virtualized-hierarchy-select/dist/index.css";
+
+const data = [
+  {
+    id: 1,
+    name: 1,
+    children: [
+      {
+        id: 11,
+        name: 11,
+        children: [
+          {
+            id: 111,
+            name: 111,
+            children: [
+              {
+                id: 1111,
+                name: 1111,
+              },
+              {
+                id: 1112,
+                name: 1112,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        id: 112,
+        name: 112,
+        children: [
+          {
+            id: 1121,
+            name: 1121,
+            children: [
+              {
+                id: 11211,
+                name: 11211,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: 2,
+    children: [
+      { id: 22, name: 22 },
+      { id: 222, name: 222 },
+    ],
+  },
+];
+
+/**
+ * 递归生成{id:obj} map集合
+ * @param {Array<Object>} list 数组 []
+ * @param {string} childrenkey 子类key 默认"children"
+ * @param {string} keyAlias id key 默认"id"
+ * @returns {object} id:object键值映射
+ **/
+export const recursive = (
+  list = [],
+  childrenkey = "children",
+  keyAlias = "id"
+) => {
+  const map = {};
+  const fn = (list) => {
+    if (list.length > 0) {
+      list.map((item) => {
+        map[item[keyAlias]] = item;
+        if (item[childrenkey] && item[childrenkey].length > 0) {
+          fn(item[childrenkey]);
+        }
+      });
+    }
+  };
+  fn(list);
+  return map;
+};
+
+const map = recursive(data)
 
 export default class App extends React.Component {
   state = {
@@ -49,46 +131,8 @@ export default class App extends React.Component {
     return (
       <VirtualizedHierarchySelect
         title="测试分类"
-        data={[
-          {
-            id: 1,
-            name: 1,
-            children: [
-              { id: 11, name: 11 },
-              { id: 112, name: 112 },
-            ],
-          },
-          {
-            id: 2,
-            name: 2,
-            children: [
-              { id: 22, name: 22 },
-              { id: 222, name: 222 },
-            ],
-          },
-        ]}
-        dataMap={{
-          1: {
-            id: 1,
-            name: 1,
-            children: [
-              { id: 11, name: 11 },
-              { id: 112, name: 112 },
-            ],
-          },
-          11: { id: 11, name: 11 },
-          112: { id: 112, name: 112 },
-          2: {
-            id: 2,
-            name: 2,
-            children: [
-              { id: 22, name: 22 },
-              { id: 222, name: 222 },
-            ],
-          },
-          22: { id: 22, name: 22 },
-          222: { id: 222, name: 222 },
-        }}
+        data={data}
+        dataMap={map}
         checkedKeys={this.state.checkedKeys}
         onChange={(e) => this.setState({ checkedKeys: e })}
       />
@@ -96,6 +140,36 @@ export default class App extends React.Component {
   }
 }
 
+
+```
+
+```
+/**
+ * 递归生成{id:obj} map集合
+ * @param {Array<Object>} list 数组 []
+ * @param {string} childrenkey 子类key 默认"children"
+ * @param {string} keyAlias id key 默认"id"
+ * @returns {object} id:object键值映射
+ **/
+export const recursive = (
+  list = [],
+  childrenkey = "children",
+  keyAlias = "id"
+) => {
+  const map = {};
+  const fn = (list) => {
+    if (list.length > 0) {
+      list.map((item) => {
+        map[item[keyAlias]] = item;
+        if (item[childrenkey] && item[childrenkey].length > 0) {
+          fn(item[childrenkey]);
+        }
+      });
+    }
+  };
+  fn(list);
+  return map;
+};
 ```
 
 ## 🎁 捐赠

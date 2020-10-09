@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import flattenDeep from "lodash/flattenDeep";
 import { List, AutoSizer } from "react-virtualized";
-import styles from "./index.css";
+import "./index.css";
 
 /**
  * @param {Array} data []
@@ -431,30 +431,3 @@ const CheckBox = ({
     <span className="hierarchyselect-checkbox-inner" />
   </span>
 );
-
-/**
- * 递归生成{id:obj} map集合
- * @param {Array<Object>} list 数组 []
- * @param {string} childrenkey 子类key 默认"children"
- * @param {string} keyAlias id key 默认"id"
- * @returns {object} id:object键值映射
- **/
-export const recursive = (
-  list = [],
-  childrenkey = "children",
-  keyAlias = "id"
-) => {
-  const map = {};
-  const fn = (list) => {
-    if (list.length > 0) {
-      list.map((item) => {
-        map[item[keyAlias]] = item;
-        if (item[childrenkey] && item[childrenkey].length > 0) {
-          fn(item[childrenkey]);
-        }
-      });
-    }
-  };
-  fn(list);
-  return map;
-};

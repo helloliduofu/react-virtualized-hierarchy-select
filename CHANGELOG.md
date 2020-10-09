@@ -32,3 +32,9 @@
 - Bugfix: 1.fix dischecked bug
           2.fix indeterminate bug
           3.remove mock data
+
+### 3.2.0 (Oct 9, 2020)
+- Bugfix: 1.fix css bug
+
+### 3.3.0 (Oct 9, 2020)
+- Bugfix: 1.fix css bug

@@ -11,12 +11,12 @@ module.exports = {
   mode: "production",
 
   entry: {
-    index: "./src/index.js",
+    index: "./src/components/index.jsx",
   },
 
   output: {
     filename: "[name].js",
-    path: path.resolve(__dirname, "es"),
+    path: path.resolve(__dirname, "dist"),
     umdNamedDefine: true, // 是否将模块名称作为 AMD 输出的命名空间
     libraryTarget: "umd",
     libraryExport: "default",
@@ -52,21 +52,8 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
-      },
-      {
-        test: /\.less$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          "css-loader",
-          {
-            loader: "less-loader",
-            options: {
-              sourceMap: true,
-              javascriptEnabled: true,
-            },
-          },
-        ],
+        include: /src/,
+        use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader"],
       },
     ],
   },
