@@ -47,12 +47,13 @@ export default class VirtualizedHierarchySelect extends Component {
     const {
       props: { childAlias, keyAlias },
     } = this;
+
     const getChildKeys = (node) =>
       this.hasChild(node)
         ? [
             ...node[childAlias].map((item) =>
               this.hasChild(item)
-                ? [item[keyAlias], getChildKeys[item]]
+                ? [item[keyAlias], ...getChildKeys(item)]
                 : item[keyAlias]
             ),
           ]
@@ -66,6 +67,7 @@ export default class VirtualizedHierarchySelect extends Component {
     const {
       props: { checkedKeys },
     } = this;
+
     if (checkedKeys.length == 0) {
       return false;
     }
@@ -129,7 +131,6 @@ export default class VirtualizedHierarchySelect extends Component {
     } = this;
 
     const root = this.getRootData();
-    const allMap = { ...dataMap, [rootAlias]: root };
 
     // 计算重新生成的勾选值
     let _checkedKeys = [];
@@ -195,10 +196,8 @@ export default class VirtualizedHierarchySelect extends Component {
           }
         }
       } else {
-        // 可以勾选所有结点
-        const activeNodeChidrenKeys = activeNodeKeys.map((item) =>
-          (allMap[item][childAlias] || []).map((item) => item[keyAlias])
-        );
+        // 取消勾选时
+        _checkedKeys = checkedKeys;
 
         // 根目录直接为[]
         if (item[keyAlias] === rootAlias) {
@@ -207,10 +206,9 @@ export default class VirtualizedHierarchySelect extends Component {
           // 包含直接过滤
           _checkedKeys = checkedKeys.filter((key) => key !== item[keyAlias]);
         } else {
-          _checkedKeys = [...checkedKeys, item[keyAlias]];
           // 注意可能会改变当前选中的结点
           const _activeNodeKeys = activeNodeKeys.slice(0, levelIndex + 1);
-          for (let i = _activeNodeKeys.length - 1; i >= 0; i--) {
+          for (let i = 0; i < _activeNodeKeys.length; i++) {
             const nodekey = _activeNodeKeys[i];
             const node = dataMap[nodekey];
 
@@ -219,19 +217,11 @@ export default class VirtualizedHierarchySelect extends Component {
               (item) => item[keyAlias]
             );
 
-            // 所有的子类key
-            const allChildrenKeys = this.getAllChildrenKeys(node);
-
-            const isIncludeFatherKey = checkedKeys.includes(nodekey);
-            if (isIncludeFatherKey) {
-              _checkedKeys = [...checkedKeys, ...childrenKeys].filter(
-                (key) =>
-                  ![item[keyAlias], nodekey, ...allChildrenKeys].includes(key)
-              );
-            } else {
-              _checkedKeys = [...checkedKeys, ...childrenKeys].filter(
-                (key) =>
-                  ![item[keyAlias], nodekey, ...allChildrenKeys].includes(key)
+            // 是否包含当前结点
+            const isIncludeCurrentKey = _checkedKeys.includes(nodekey);
+            if (isIncludeCurrentKey) {
+              _checkedKeys = [..._checkedKeys, ...childrenKeys].filter(
+                (key) => ![item[keyAlias], nodekey].includes(key)
               );
             }
           }
@@ -271,9 +261,10 @@ export default class VirtualizedHierarchySelect extends Component {
               checked={isChecked}
               disabled={item.disabled}
               indeterminate={isHalfChecked}
-              onChange={(e) => {
-                this.onSelect(item[keyAlias], levelIndex);
-                this.onCheck(item, e.target.checked, levelIndex);
+              onChange={async (e) => {
+                const checked = e.target.checked;
+                await this.onSelect(item[keyAlias], levelIndex);
+                await this.onCheck(item, checked, levelIndex);
               }}
             />
           )}
@@ -283,9 +274,10 @@ export default class VirtualizedHierarchySelect extends Component {
               className="hierarchyselect-mr-5"
               checked={isChecked}
               disabled={item.disabled}
-              onChange={(e) => {
-                this.onSelect(item[keyAlias], levelIndex);
-                this.onCheck(item, e.target.checked, levelIndex);
+              onChange={async (e) => {
+                const checked = e.target.checked;
+                await this.onSelect(item[keyAlias], levelIndex);
+                await this.onCheck(item, checked, levelIndex);
               }}
             />
           )}
@@ -431,7 +423,6 @@ const CheckBox = ({
       type="checkbox"
       checked={checked}
       disabled={disabled}
-      indeterminate={indeterminate}
       onChange={(e) => {
         e.stopPropagation();
         onChange(e);

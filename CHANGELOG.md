@@ -27,3 +27,8 @@
 - feat: checked style 
 - Bugfix: 1.fix checked bug
           2.fix css style display bug
+
+### 3.1.0 (Oct 9, 2020)
+- Bugfix: 1.fix dischecked bug
+          2.fix indeterminate bug
+          3.remove mock data
