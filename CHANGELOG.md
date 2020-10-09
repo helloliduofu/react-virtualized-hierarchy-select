@@ -38,3 +38,6 @@
 
 ### 3.3.0 (Oct 9, 2020)
 - Bugfix: 1.fix css bug
+
+### 3.3.0 (Oct 9, 2020)
+- feat: 1.gif

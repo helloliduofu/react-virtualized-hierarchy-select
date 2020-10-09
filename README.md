@@ -13,6 +13,8 @@ English | [简体中文](./README-zh_CN.md)
 
 # React Virtualized Select
 
+![React Virtualized Select](./gif.gif)
+
 ## Getting started
 
 Install `react-virtualized-hierarchy-select` using npm.

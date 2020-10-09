@@ -13,6 +13,8 @@
 
 # React Virtualized Select
 
+![React Virtualized Select](./gif.gif)
+
 ## 📦 安装
 
 Install `react-virtualized-hierarchy-select` using npm.
